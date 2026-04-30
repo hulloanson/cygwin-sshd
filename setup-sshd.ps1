@@ -70,12 +70,23 @@ if ($missingPackages.Count -gt 0) {
     $pkgList = $missingPackages -join ","
     Write-Host "Installing Cygwin packages: $pkgList"
     $setup = Get-CygwinSetup
+    # setup-x86_64.exe often returns non-zero even on success; verify by checking files.
     & $setup --quiet-mode --no-shortcuts --no-startmenu --no-desktop `
         --root $CygwinRoot `
         --site $CygwinMirror `
         --packages $pkgList
-    if ($LASTEXITCODE -ne 0) {
-        throw "Cygwin package installation failed."
+
+    $stillMissing = @()
+    if ($missingPackages -contains "cygrunsrv" -and
+        -not (Test-Path (Join-Path $CygwinRoot "bin\cygrunsrv.exe"))) {
+        $stillMissing += "cygrunsrv"
+    }
+    if ($missingPackages -contains "openssh") {
+        & $bash --login -c "which sshd > /dev/null 2>&1"
+        if ($LASTEXITCODE -ne 0) { $stillMissing += "openssh" }
+    }
+    if ($stillMissing.Count -gt 0) {
+        throw "Package installation failed — still missing: $($stillMissing -join ', '). Check your internet connection or try a different -CygwinMirror."
     }
     Write-Host "Packages installed." -ForegroundColor Green
 } else {
