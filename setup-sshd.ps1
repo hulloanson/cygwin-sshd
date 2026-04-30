@@ -61,8 +61,7 @@ $missingPackages = @()
 if (-not (Test-Path (Join-Path $CygwinRoot "bin\cygrunsrv.exe"))) {
     $missingPackages += "cygrunsrv"
 }
-& $bash --login -c "which sshd > /dev/null 2>&1"
-if ($LASTEXITCODE -ne 0) {
+if (-not (Test-Path (Join-Path $CygwinRoot "usr\sbin\sshd.exe"))) {
     $missingPackages += "openssh"
 }
 
@@ -84,9 +83,9 @@ if ($missingPackages.Count -gt 0) {
         -not (Test-Path (Join-Path $CygwinRoot "bin\cygrunsrv.exe"))) {
         $stillMissing += "cygrunsrv"
     }
-    if ($missingPackages -contains "openssh") {
-        & $bash --login -c "which sshd > /dev/null 2>&1"
-        if ($LASTEXITCODE -ne 0) { $stillMissing += "openssh" }
+    if ($missingPackages -contains "openssh" -and
+        -not (Test-Path (Join-Path $CygwinRoot "usr\sbin\sshd.exe"))) {
+        $stillMissing += "openssh"
     }
     if ($stillMissing.Count -gt 0) {
         throw "Package installation failed - still missing: $($stillMissing -join ', '). Check your internet connection or try a different -CygwinMirror."
