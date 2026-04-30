@@ -70,11 +70,14 @@ if ($missingPackages.Count -gt 0) {
     $pkgList = $missingPackages -join ","
     Write-Host "Installing Cygwin packages: $pkgList"
     $setup = Get-CygwinSetup
-    # setup-x86_64.exe often returns non-zero even on success; verify by checking files.
-    & $setup --quiet-mode --no-shortcuts --no-startmenu --no-desktop `
-        --root $CygwinRoot `
-        --site $CygwinMirror `
-        --packages $pkgList
+    # setup-x86_64.exe spawns a child and returns immediately; -Wait blocks until done.
+    # It also often returns non-zero even on success, so verify by checking files instead.
+    Start-Process -FilePath $setup -Wait -NoNewWindow -ArgumentList (
+        "--quiet-mode", "--no-shortcuts", "--no-startmenu", "--no-desktop",
+        "--root", $CygwinRoot,
+        "--site", $CygwinMirror,
+        "--packages", $pkgList
+    )
 
     $stillMissing = @()
     if ($missingPackages -contains "cygrunsrv" -and
