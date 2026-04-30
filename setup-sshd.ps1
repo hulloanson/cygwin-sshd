@@ -88,9 +88,9 @@ if ($missingPackages.Count -gt 0) {
     if ($stillMissing.Count -gt 0) {
         throw "Package installation failed - still missing: $($stillMissing -join ', '). Check your internet connection or try a different -CygwinMirror."
     }
-    Write-Host "Packages installed." -ForegroundColor Green
+    Write-Host "Packages installed."
 } else {
-    Write-Host "openssh and cygrunsrv already present." -ForegroundColor Green
+    Write-Host "openssh and cygrunsrv already present."
 }
 
 # --- Run ssh-host-config ---
@@ -125,7 +125,7 @@ if ($existing) {
         -LocalPort $SshPort `
         -Action Allow `
         -Profile Any | Out-Null
-    Write-Host "Firewall rule added." -ForegroundColor Green
+    Write-Host "Firewall rule added."
 }
 
 # --- Start the service ---
@@ -135,7 +135,7 @@ Start-Service sshd
 Set-Service sshd -StartupType Automatic
 
 $svc = Get-Service sshd
-Write-Host "sshd service status: $($svc.Status)" -ForegroundColor Green
+Write-Host "sshd service status: $($svc.Status)"
 
 Write-Host ""
-Write-Host "Setup complete. Connect with: ssh <username>@<this-machine> -p $SshPort" -ForegroundColor Cyan
+Write-Host "Setup complete. Connect with: ssh <username>@<this-machine> -p $SshPort"
