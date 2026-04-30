@@ -86,7 +86,7 @@ if ($missingPackages.Count -gt 0) {
         if ($LASTEXITCODE -ne 0) { $stillMissing += "openssh" }
     }
     if ($stillMissing.Count -gt 0) {
-        throw "Package installation failed — still missing: $($stillMissing -join ', '). Check your internet connection or try a different -CygwinMirror."
+        throw "Package installation failed - still missing: $($stillMissing -join ', '). Check your internet connection or try a different -CygwinMirror."
     }
     Write-Host "Packages installed." -ForegroundColor Green
 } else {
