@@ -103,6 +103,13 @@ if ($missingPackages.Count -gt 0) {
 Write-Host "Running ssh-host-config..."
 Invoke-Cygwin "ssh-host-config --yes --privileged --name sshd"
 
+# --- Populate /etc/passwd and /etc/group with local Windows accounts ---
+# sshd needs these entries to resolve Windows usernames during login.
+
+Write-Host "Updating /etc/passwd and /etc/group..."
+Invoke-Cygwin "mkpasswd -l > /etc/passwd"
+Invoke-Cygwin "mkgroup -l > /etc/group"
+
 # --- Configure sshd_config port if non-default ---
 
 if ($SshPort -ne 22) {
